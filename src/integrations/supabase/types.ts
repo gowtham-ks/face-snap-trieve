@@ -38,6 +38,41 @@ export type Database = {
         }
         Relationships: []
       }
+      recognition_logs: {
+        Row: {
+          confidence: number
+          created_at: string
+          face_embedding_id: string | null
+          id: string
+          recognized_name: string
+          timestamp: string
+        }
+        Insert: {
+          confidence: number
+          created_at?: string
+          face_embedding_id?: string | null
+          id?: string
+          recognized_name: string
+          timestamp?: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          face_embedding_id?: string | null
+          id?: string
+          recognized_name?: string
+          timestamp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recognition_logs_face_embedding_id_fkey"
+            columns: ["face_embedding_id"]
+            isOneToOne: false
+            referencedRelation: "face_embeddings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
