@@ -184,17 +184,6 @@ const Index = () => {
 
         {/* Users List */}
         <UsersList users={users} onUpdate={loadFaceData} />
-
-        {/* Footer Info */}
-        <div className="glass-card rounded-2xl p-6 max-w-3xl mx-auto">
-          <h3 className="text-lg font-semibold mb-3">⚡ Performance Features:</h3>
-          <ul className="space-y-2 text-muted-foreground">
-            <li>• <span className="text-accent font-medium">Hash Map:</span> O(1) face embedding lookup</li>
-            <li>• <span className="text-accent font-medium">Trie:</span> Fast prefix-based name autocomplete</li>
-            <li>• <span className="text-accent font-medium">Real-time:</span> Live webcam face detection</li>
-            <li>• <span className="text-accent font-medium">Persistent:</span> Database storage with Cloud</li>
-          </ul>
-        </div>
       </div>
     </div>
   );
