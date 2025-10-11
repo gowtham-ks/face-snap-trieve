@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { UserPlus, Loader2 } from 'lucide-react';
+import { UserPlus, Loader2, SwitchCamera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -17,6 +17,7 @@ export const RegisterDialog = ({ onRegister, disabled }: RegisterDialogProps) =>
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const { toast } = useToast();
@@ -24,7 +25,7 @@ export const RegisterDialog = ({ onRegister, disabled }: RegisterDialogProps) =>
   const startCapture = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user' }
+        video: { facingMode }
       });
       
       if (videoRef.current) {
@@ -46,6 +47,12 @@ export const RegisterDialog = ({ onRegister, disabled }: RegisterDialogProps) =>
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
     }
+  };
+
+  const toggleCamera = async () => {
+    stopCapture();
+    setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
+    await startCapture();
   };
 
   const handleRegister = async () => {
@@ -157,6 +164,16 @@ export const RegisterDialog = ({ onRegister, disabled }: RegisterDialogProps) =>
               muted
               className="w-full h-full object-cover"
             />
+            <Button
+              type="button"
+              variant="secondary"
+              size="icon"
+              className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm"
+              onClick={toggleCamera}
+              disabled={isRegistering}
+            >
+              <SwitchCamera className="h-5 w-5" />
+            </Button>
           </div>
 
           <div className="space-y-2">
