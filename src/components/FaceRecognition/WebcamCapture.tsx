@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { Camera, CameraOff } from 'lucide-react';
+import { Camera, CameraOff, SwitchCamera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
@@ -12,6 +12,7 @@ interface WebcamCaptureProps {
 export const WebcamCapture = ({ isActive, onFrame, onToggle }: WebcamCaptureProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
   const { toast } = useToast();
   const frameIntervalRef = useRef<number>();
 
@@ -23,7 +24,7 @@ export const WebcamCapture = ({ isActive, onFrame, onToggle }: WebcamCaptureProp
     }
 
     return () => stopWebcam();
-  }, [isActive]);
+  }, [isActive, facingMode]);
 
   const startWebcam = async () => {
     try {
@@ -31,7 +32,7 @@ export const WebcamCapture = ({ isActive, onFrame, onToggle }: WebcamCaptureProp
         video: {
           width: { ideal: 1280 },
           height: { ideal: 720 },
-          facingMode: 'user'
+          facingMode: facingMode
         }
       });
 
@@ -78,6 +79,49 @@ export const WebcamCapture = ({ isActive, onFrame, onToggle }: WebcamCaptureProp
     }
   };
 
+  const toggleCamera = async () => {
+    if (!isActive) return;
+    
+    stopWebcam();
+    const newFacingMode = facingMode === 'user' ? 'environment' : 'user';
+    setFacingMode(newFacingMode);
+    
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          facingMode: newFacingMode
+        }
+      });
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+        setStream(mediaStream);
+        
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current?.play();
+          
+          if (onFrame) {
+            frameIntervalRef.current = window.setInterval(() => {
+              if (videoRef.current) {
+                onFrame(videoRef.current);
+              }
+            }, 1000);
+          }
+        };
+      }
+    } catch (error) {
+      console.error('Error switching camera:', error);
+      toast({
+        title: 'Camera Switch Failed',
+        description: 'Unable to access the requested camera',
+        variant: 'destructive',
+      });
+      setFacingMode(facingMode);
+    }
+  };
+
   return (
     <div className="relative w-full max-w-3xl mx-auto">
       <div className="glass-card rounded-2xl overflow-hidden card-shadow">
@@ -101,10 +145,21 @@ export const WebcamCapture = ({ isActive, onFrame, onToggle }: WebcamCaptureProp
 
           {/* Recording indicator */}
           {isActive && (
-            <div className="absolute top-4 left-4 flex items-center gap-2 bg-destructive/90 backdrop-blur-sm px-3 py-1.5 rounded-full">
-              <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-              <span className="text-xs font-medium text-white">LIVE</span>
-            </div>
+            <>
+              <div className="absolute top-4 left-4 flex items-center gap-2 bg-destructive/90 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                <span className="text-xs font-medium text-white">LIVE</span>
+              </div>
+              
+              {/* Camera toggle button */}
+              <button
+                onClick={toggleCamera}
+                className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded-full transition-all"
+                title="Switch Camera"
+              >
+                <SwitchCamera className="w-5 h-5 text-white" />
+              </button>
+            </>
           )}
         </div>
 
