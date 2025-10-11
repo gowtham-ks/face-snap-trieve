@@ -51,8 +51,28 @@ export const RegisterDialog = ({ onRegister, disabled }: RegisterDialogProps) =>
 
   const toggleCamera = async () => {
     stopCapture();
-    setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
-    await startCapture();
+    const newFacingMode = facingMode === 'user' ? 'environment' : 'user';
+    setFacingMode(newFacingMode);
+    
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: newFacingMode }
+      });
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        streamRef.current = stream;
+      }
+    } catch (error) {
+      console.error('Error switching camera:', error);
+      toast({
+        title: 'Camera Switch Failed',
+        description: 'Unable to access the requested camera',
+        variant: 'destructive',
+      });
+      // Revert to previous facing mode if switch fails
+      setFacingMode(facingMode);
+    }
   };
 
   const handleRegister = async () => {
