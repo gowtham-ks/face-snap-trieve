@@ -6,6 +6,7 @@ import { SearchBox } from '@/components/FaceRecognition/SearchBox';
 import { RecognitionDisplay } from '@/components/FaceRecognition/RecognitionDisplay';
 import { UsersList } from '@/components/FaceRecognition/UsersList';
 import { KeyboardShortcutsDialog } from '@/components/KeyboardShortcutsDialog';
+import { InstallPrompt } from '@/components/InstallPrompt';
 import { Trie } from '@/utils/trie';
 import { faceRecognition } from '@/utils/faceRecognition';
 import { supabase } from '@/integrations/supabase/client';
@@ -276,6 +277,9 @@ const Index = () => {
           open={showShortcuts}
           onOpenChange={setShowShortcuts}
         />
+        
+        {/* Desktop App Install Prompt */}
+        <InstallPrompt />
       </div>
     </div>
   );

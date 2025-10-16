@@ -1,12 +1,12 @@
 {
-  "name": "Face Recognition App",
+  "name": "Face Recognition Desktop App",
   "short_name": "FaceSnap",
-  "description": "Real-time face recognition and registration system",
+  "description": "Real-time face recognition and registration system with desktop features",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
-  "orientation": "portrait",
+  "background_color": "#0a0a0a",
+  "theme_color": "#6366f1",
+  "orientation": "any",
   "icons": [
     {
       "src": "/favicon.png",
