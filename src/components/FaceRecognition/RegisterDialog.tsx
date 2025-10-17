@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { faceRecognition } from '@/utils/faceRecognition';
 import { supabase } from '@/integrations/supabase/client';
+import { notifyFaceRecognized } from '@/utils/notifications';
 
 interface RegisterDialogProps {
   onRegister: () => void;
@@ -119,6 +120,9 @@ export const RegisterDialog = ({ onRegister, disabled }: RegisterDialogProps) =>
         title: 'Success!',
         description: `${name} has been registered successfully`,
       });
+
+      // Send desktop notification
+      notifyFaceRecognized(name.trim(), 100);
 
       setName('');
       setOpen(false);
